@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MacOS Web</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      overflow: hidden;
+      background: url('assets/background/1.jpg') no-repeat center center;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Menu Bar */
+    .menu-bar {
+      height: 24px;
+      background-color: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      color: white;
+      font-size: 13px;
+      z-index: 100;
+    }
+
+    .menu-bar .apple-logo {
+      font-weight: bold;
+      margin-right: 15px;
+      cursor: pointer;
+    }
+
+    .menu-bar .menu-item {
+      margin-right: 15px;
+      cursor: pointer;
+    }
+
+    .menu-bar .right-items {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+    }
+    
+    .menu-bar .right-items div {
+      margin-left: 15px;
+      cursor: pointer;
+    }
+
+    /* Dock */
+    .dock-container {
+      margin-top: auto;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding-bottom: 12px;
+    }
+
+    .dock {
+      background-color: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      padding: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .dock-item {
+      width: 50px;
+      height: 50px;
+      margin: 0 5px;
+      transition: all 0.2s ease;
+      position: relative;
+      cursor: pointer;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .dock-item:hover {
+      transform: scale(1.2);
+      margin: 0 10px;
+    }
+
+    .dock-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 12px;
+    }
+
+    .dock-item::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.7);
+      opacity: 0;
+    }
+
+    .dock-item.active::after {
+      opacity: 1;
+    }
+
+    /* App Window */
+    .app-window {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 800px;
+      height: 600px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      display: none;
+      z-index: 10;
+    }
+
+    .app-window.active {
+      display: flex;
+    }
+
+    .window-header {
+      height: 30px;
+      background-color: #f2f2f2;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .window-buttons {
+      display: flex;
+      align-items: center;
+    }
+
+    .window-button {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+      cursor: pointer;
+    }
+
+    .close-button {
+      background-color: #ff5f56;
+    }
+
+    .minimize-button {
+      background-color: #ffbd2e;
+    }
+
+    .maximize-button {
+      background-color: #27c93f;
+    }
+
+    .window-title {
+      margin-left: 20px;
+      font-size: 13px;
+      color: #333;
+    }
+
+    .window-content {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .window-content iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Menu Bar -->
+  <div class="menu-bar">
+    <div class="apple-logo">&#xf8ff;</div>
+    <div class="menu-item">Finder</div>
+    <div class="menu-item">File</div>
+    <div class="menu-item">Edit</div>
+    <div class="menu-item">View</div>
+    <div class="menu-item">Go</div>
+    <div class="menu-item">Window</div>
+    <div class="menu-item">Help</div>
+    <div class="right-items">
+      <div class="wifi">WiFi</div>
+      <div class="battery">100%</div>
+      <div class="time" id="current-time">12:00 PM</div>
+    </div>
+  </div>
+
+  <!-- App Window (Buddy Central) -->
+  <div class="app-window" id="buddy-central-window">
+    <div class="window-header">
+      <div class="window-buttons">
+        <div class="window-button close-button"></div>
+        <div class="window-button minimize-button"></div>
+        <div class="window-button maximize-button"></div>
+      </div>
+      <div class="window-title">Buddy Central</div>
+    </div>
+    <div class="window-content">
+      <iframe src="https://lowahbeepoh.github.io/buddycentral"></iframe>
+    </div>
+  </div>
+
+  <!-- Dock -->
+  <div class="dock-container">
+    <div class="dock">
+      <div class="dock-item" data-app="finder">
+        <img src="assets/icons/apps/Finder.png" alt="Finder">
+      </div>
+      <div class="dock-item" data-app="safari">
+        <img src="assets/icons/apps/Safari.png" alt="Safari">
+      </div>
+      <div class="dock-item" data-app="youtube">
+        <img src="assets/icons/apps/YouTube.png" alt="YouTube">
+      </div>
+      <div class="dock-item" data-app="spotify">
+        <img src="assets/icons/apps/Spotify.png" alt="Spotify">
+      </div>
+      <div class="dock-item" data-app="discord">
+        <img src="assets/icons/apps/Discord.png" alt="Discord">
+      </div>
+      <div class="dock-item" data-app="notion">
+        <img src="assets/icons/apps/Notion.png" alt="Notion">
+      </div>
+      <div class="dock-item" data-app="buddy-central">
+        <img src="assets/icons/apps/buddycentral.png" alt="Buddy Central">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Update time in menu bar
+    function updateTime() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      const formattedHours = hours % 12 || 12;
+      const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+      document.getElementById('current-time').textContent = `${formattedHours}:${formattedMinutes} ${ampm}`;
+    }
+    
+    // Update time immediately and then every minute
+    updateTime();
+    setInterval(updateTime, 60000);
+
+    // Handle dock items click
+    const dockItems = document.querySelectorAll('.dock-item');
+    dockItems.forEach(item => {
+      item.addEventListener('click', function() {
+        const app = this.getAttribute('data-app');
+        if (app === 'buddy-central') {
+          document.getElementById('buddy-central-window').classList.add('active');
+          dockItems.forEach(di => di.classList.remove('active'));
+          this.classList.add('active');
+        }
+      });
+    });
+
+    // Handle window buttons
+    document.querySelector('.close-button').addEventListener('click', function() {
+      const window = this.closest('.app-window');
+      window.classList.remove('active');
+      document.querySelector('.dock-item.active').classList.remove('active');
+    });
+
+    document.querySelector('.minimize-button').addEventListener('click', function() {
+      const window = this.closest('.app-window');
+      window.classList.remove('active');
+    });
+
+    // Handle window drag (simplified version)
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    document.querySelectorAll('.window-header').forEach(header => {
+      header.addEventListener('mousedown', function(e) {
+        const window = this.closest('.app-window');
+        isDragging = true;
+        offsetX = e.clientX - window.getBoundingClientRect().left;
+        offsetY = e.clientY - window.getBoundingClientRect().top;
+      });
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (isDragging) {
+        const windows = document.querySelectorAll('.app-window.active');
+        windows.forEach(window => {
+          window.style.left = (e.clientX - offsetX) + 'px';
+          window.style.top = (e.clientY - offsetY) + 'px';
+          window.style.transform = 'none';
+        });
+      }
+    });
+
+    document.addEventListener('mouseup', function() {
+      isDragging = false;
+    });
+  </script>
+</body>
+</html>
