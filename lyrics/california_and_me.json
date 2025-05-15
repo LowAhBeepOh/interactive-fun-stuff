@@ -1,0 +1,33 @@
+{
+    "title": "California and Me",
+    "audioFile": "california_and_me.mp3",
+    "initialDelay": 9240,
+    "lyrics": [
+        { "text": "Should have figured that you'd go back to New York", "duration": 9540, "textColor": "#FDC250", "backgroundColor": "#48250F", "fontFamily": "Instrument Serif", "fontWeight": 400, "italic": false },
+        { "text": "Don't consider me when you run back to her", "duration": 8890, "textColor": "#FDC250", "backgroundColor": "#48250F", "fontFamily": "Instrument Serif", "fontWeight": 400, "italic": false },
+        { "text": "You don't have to hide it, I know why you went", "duration": 4580, "textColor": "#FDC250", "backgroundColor": "#48250F", "fontFamily": "Instrument Serif", "fontWeight": 400, "italic": false },
+        { "text": "Said you needed space, I know better than that", "duration": 5240, "textColor": "#FDC250", "backgroundColor": "#48250F", "fontFamily": "Instrument Serif", "fontWeight": 400, "italic": false },
+        { "text": "Mm-mm", "duration": 5640, "textColor": "#FDC250", "backgroundColor": "#48250F", "fontFamily": "Instrument Serif", "fontWeight": 400, "italic": false },
+        { "text": "Could have fought for you, but I just let you leave", "duration": 9640, "textColor": "#FDC250", "backgroundColor": "#48250F", "fontFamily": "Instrument Serif", "fontWeight": 400, "italic": false },
+        { "text": "Hurt too much to consider you didn't love me", "duration": 8790, "textColor": "#FDC250", "backgroundColor": "#48250F" },
+        { "text": "The mountains of LA will weep through the night", "duration": 4990, "textColor": "#FDC250", "backgroundColor": "#48250F" },
+        { "text": "Driving down Sunset's a terrible sight", "duration": 4790, "textColor": "#FDC250", "backgroundColor": "#48250F" },
+        { "text": "Mm-mm", "duration": 5910, "textColor": "#FDC250", "backgroundColor": "#48250F" },
+        { "text": "Left me and the ocean for your old flame", "duration": 9190, "textColor": "#FC3030", "backgroundColor": "#48250F" },
+        { "text": "Holding back my tears, I couldn't make you stay", "duration": 9360, "textColor": "#FC3030", "backgroundColor": "#48250F" },
+        { "text": "Can't quit this", "duration": 4960, "textColor": "#FDC250", "backgroundColor": "#FC3030" },
+        { "text": "So damn wicked", "duration": 4010, "textColor": "#FDC250", "backgroundColor": "#FC3030" },
+        { "text": "To leave California and me", "duration": 9540, "textColor": "#FDC250", "backgroundColor": "#FC3030" },
+        { "text": "♪", "duration": 5100, "textColor": "#FDC250", "backgroundColor": "#48250F" },
+        { "text": "I imagine you holding her in your arms", "duration": 9280, "textColor": "#FDC250", "backgroundColor": "#48250F" },
+        { "text": "Laughing 'bout how I thought that you were the one", "duration": 9160, "textColor": "#FDC250", "backgroundColor": "#48250F" },
+        { "text": "I get so anxious and maybe I'm young", "duration": 4360, "textColor": "#FDC250", "backgroundColor": "#48250F" },
+        { "text": "The first sign of trouble and I bite my tongue", "duration": 5020, "textColor": "#FDC250", "backgroundColor": "#48250F" },
+        { "text": "Mm-mm", "duration": 5980, "textColor": "#FDC250", "backgroundColor": "#48250F" },
+        { "text": "Left me and the ocean for your old flame", "duration": 9360, "textColor": "#FDC250", "backgroundColor": "#48250F" },
+        { "text": "Holding back my tears, I couldn't make you stay", "duration": 9420, "textColor": "#FDC250", "backgroundColor": "#48250F" },
+        { "text": "Can't quit this", "duration": 4500, "textColor": "#FDC250", "backgroundColor": "#48250F" },
+        { "text": "So damn wicked", "duration": 4500, "textColor": "#FDC250", "backgroundColor": "#48250F" },
+        { "text": "To leave California and me", "duration": 7830, "textColor": "#FDC250", "backgroundColor": "#48250F" }
+    ]
+}
