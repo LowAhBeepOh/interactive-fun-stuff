@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Synced Lyrics Player</title>
+    <title>hmmm lyrics viewer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap" rel="stylesheet">
@@ -217,7 +217,7 @@
 <body>
     <div id="upload-container">
         <div class="upload-box" onclick="document.getElementById('file-input').click()">
-            <h1>dumb lyrics viewer</h1>
+            <h1>lyrics viewer thing</h1>
             <p>upload your song</p>
             <p style="font-size: 0.9em; margin-top: 10px; opacity: 0.7;">supports MP3, WAV, M4A, and more, probably</p>
         </div>
@@ -226,7 +226,7 @@
 
     <div id="lyrics-container">
         <div id="song-info">
-            <div id="song-title">Loading...</div>
+            <div id="song-title">Uh...</div>
             <div id="song-artist"></div>
         </div>
         <div id="lyrics-display"></div>
@@ -293,7 +293,7 @@
                     console.error('Error reading metadata:', error);
                     songTitle.textContent = 'Unknown Title';
                     songArtist.textContent = 'Unknown Artist';
-                    lyricsDisplay.innerHTML = '<p class="loading">Could not read song metadata</p>';
+                    lyricsDisplay.innerHTML = '<p class="loading">could not read song metadata, lol</p>';
                 }
             });
         }
@@ -302,9 +302,9 @@
             lyricsDisplay.innerHTML = '<p class="loading">Fetching lyrics...</p>';
             
             try {
-                const response = await fetch(
-                    `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`
-                );
+                // Use CORS proxy to bypass restrictions
+                const url = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`;
+                const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
                 
                 if (!response.ok) throw new Error('Lyrics not found');
                 
