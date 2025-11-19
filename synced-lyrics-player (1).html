@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synced Lyrics Player</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans Flex', sans-serif;
+            transition: background-color 0.8s ease, color 0.8s ease;
+            overflow: hidden;
+        }
+
+        #upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: white;
+            padding: 20px;
+        }
+
+        #upload-container.hidden {
+            display: none;
+        }
+
+        .upload-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-box:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: scale(1.02);
+        }
+
+        .upload-box h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .upload-box p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        #lyrics-container {
+            display: none;
+            min-height: 100vh;
+            padding: 60px 40px;
+            text-align: center;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #lyrics-container.active {
+            display: flex;
+        }
+
+        #song-info {
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        #song-title {
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            opacity: 0.95;
+        }
+
+        #song-artist {
+            font-size: 1.8em;
+            font-weight: 400;
+            opacity: 0.8;
+        }
+
+        #lyrics-display {
+            max-width: 900px;
+            width: 100%;
+            animation: fadeIn 1s ease;
+        }
+
+        .lyric-line {
+            font-size: 2.5em;
+            font-weight: 500;
+            margin: 20px 0;
+            opacity: 0.3;
+            transition: all 0.4s ease;
+            line-height: 1.4;
+        }
+
+        .lyric-line.active {
+            opacity: 1;
+            transform: scale(1.1);
+            font-weight: 600;
+        }
+
+        .lyric-line.previous {
+            opacity: 0.5;
+        }
+
+        #controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            border-radius: 50px;
+            animation: slideUp 0.8s ease;
+        }
+
+        #controls button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        #controls button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        #progress-bar {
+            width: 200px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        #progress-fill {
+            height: 100%;
+            background: white;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        #time-display {
+            color: white;
+            font-size: 0.9em;
+            opacity: 0.9;
+            min-width: 100px;
+        }
+
+        .loading {
+            font-size: 1.5em;
+            opacity: 0.8;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="upload-container">
+        <div class="upload-box" onclick="document.getElementById('file-input').click()">
+            <h1>🎵 Synced Lyrics Player</h1>
+            <p>Click to upload your song</p>
+            <p style="font-size: 0.9em; margin-top: 10px; opacity: 0.7;">Supports MP3, WAV, M4A, and more</p>
+        </div>
+        <input type="file" id="file-input" accept="audio/*">
+    </div>
+
+    <div id="lyrics-container">
+        <div id="song-info">
+            <div id="song-title">Loading...</div>
+            <div id="song-artist"></div>
+        </div>
+        <div id="lyrics-display"></div>
+        <div id="controls">
+            <button id="play-pause">Play</button>
+            <div id="progress-bar">
+                <div id="progress-fill"></div>
+            </div>
+            <div id="time-display">0:00 / 0:00</div>
+            <button id="new-song">New Song</button>
+        </div>
+    </div>
+
+    <audio id="audio-player"></audio>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const uploadContainer = document.getElementById('upload-container');
+        const lyricsContainer = document.getElementById('lyrics-container');
+        const audioPlayer = document.getElementById('audio-player');
+        const songTitle = document.getElementById('song-title');
+        const songArtist = document.getElementById('song-artist');
+        const lyricsDisplay = document.getElementById('lyrics-display');
+        const playPauseBtn = document.getElementById('play-pause');
+        const progressBar = document.getElementById('progress-bar');
+        const progressFill = document.getElementById('progress-fill');
+        const timeDisplay = document.getElementById('time-display');
+        const newSongBtn = document.getElementById('new-song');
+
+        let lyrics = [];
+        let audioContext, analyser, dataArray;
+
+        fileInput.addEventListener('change', handleFileSelect);
+        playPauseBtn.addEventListener('click', togglePlayPause);
+        newSongBtn.addEventListener('click', resetApp);
+        progressBar.addEventListener('click', seekAudio);
+
+        async function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            uploadContainer.classList.add('hidden');
+            lyricsContainer.classList.add('active');
+
+            audioPlayer.src = URL.createObjectURL(file);
+            
+            // Read metadata
+            jsmediatags.read(file, {
+                onSuccess: async (tag) => {
+                    const title = tag.tags.title || 'Unknown Title';
+                    const artist = tag.tags.artist || 'Unknown Artist';
+                    
+                    songTitle.textContent = title;
+                    songArtist.textContent = artist;
+                    
+                    // Fetch lyrics
+                    await fetchLyrics(title, artist);
+                    
+                    // Setup audio analysis
+                    setupAudioAnalysis();
+                },
+                onError: (error) => {
+                    console.error('Error reading metadata:', error);
+                    songTitle.textContent = 'Unknown Title';
+                    songArtist.textContent = 'Unknown Artist';
+                    lyricsDisplay.innerHTML = '<p class="loading">Could not read song metadata</p>';
+                }
+            });
+        }
+
+        async function fetchLyrics(title, artist) {
+            lyricsDisplay.innerHTML = '<p class="loading">Fetching lyrics...</p>';
+            
+            try {
+                const response = await fetch(
+                    `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`
+                );
+                
+                if (!response.ok) throw new Error('Lyrics not found');
+                
+                const data = await response.json();
+                
+                if (data.syncedLyrics) {
+                    parseLRC(data.syncedLyrics);
+                } else if (data.plainLyrics) {
+                    lyricsDisplay.innerHTML = `<p class="loading">Synced lyrics not available</p>
+                    <div style="margin-top: 20px; opacity: 0.7; font-size: 0.8em; white-space: pre-wrap;">${data.plainLyrics}</div>`;
+                } else {
+                    lyricsDisplay.innerHTML = '<p class="loading">No lyrics found for this song</p>';
+                }
+            } catch (error) {
+                console.error('Error fetching lyrics:', error);
+                lyricsDisplay.innerHTML = '<p class="loading">Lyrics not found. Try playing the song anyway!</p>';
+            }
+        }
+
+        function parseLRC(lrcText) {
+            lyrics = [];
+            const lines = lrcText.split('\n');
+            
+            lines.forEach(line => {
+                const match = line.match(/\[(\d+):(\d+\.\d+)\](.*)/);
+                if (match) {
+                    const minutes = parseInt(match[1]);
+                    const seconds = parseFloat(match[2]);
+                    const text = match[3].trim();
+                    const time = minutes * 60 + seconds;
+                    
+                    if (text) {
+                        lyrics.push({ time, text });
+                    }
+                }
+            });
+            
+            displayLyrics();
+        }
+
+        function displayLyrics() {
+            lyricsDisplay.innerHTML = '';
+            lyrics.forEach((lyric, index) => {
+                const line = document.createElement('div');
+                line.className = 'lyric-line';
+                line.textContent = lyric.text;
+                line.dataset.index = index;
+                lyricsDisplay.appendChild(line);
+            });
+        }
+
+        function setupAudioAnalysis() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
+            const source = audioContext.createMediaElementSource(audioPlayer);
+            
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+            
+            analyser.fftSize = 256;
+            const bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+            
+            analyzeAudio();
+        }
+
+        function analyzeAudio() {
+            requestAnimationFrame(analyzeAudio);
+            
+            if (!analyser) return;
+            
+            analyser.getByteFrequencyData(dataArray);
+            
+            // Calculate audio features
+            const bass = dataArray.slice(0, 10).reduce((a, b) => a + b, 0) / 10;
+            const mid = dataArray.slice(10, 40).reduce((a, b) => a + b, 0) / 30;
+            const treble = dataArray.slice(40, 100).reduce((a, b) => a + b, 0) / 60;
+            const overall = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+            
+            // Generate colors based on audio features
+            const hue = (bass / 255 * 60 + mid / 255 * 180 + treble / 255 * 100) % 360;
+            const saturation = 40 + (overall / 255 * 40);
+            const lightness = 15 + (overall / 255 * 25);
+            
+            // High energy = warmer/brighter, low energy = cooler/darker
+            const textLightness = 75 + (overall / 255 * 20);
+            
+            document.body.style.backgroundColor = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+            document.body.style.color = `hsl(${hue}, 20%, ${textLightness}%)`;
+        }
+
+        audioPlayer.addEventListener('timeupdate', () => {
+            const currentTime = audioPlayer.currentTime;
+            
+            // Update progress bar
+            const progress = (currentTime / audioPlayer.duration) * 100;
+            progressFill.style.width = `${progress}%`;
+            
+            // Update time display
+            timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(audioPlayer.duration)}`;
+            
+            // Update lyrics
+            if (lyrics.length === 0) return;
+            
+            let currentIndex = -1;
+            for (let i = 0; i < lyrics.length; i++) {
+                if (currentTime >= lyrics[i].time) {
+                    currentIndex = i;
+                } else {
+                    break;
+                }
+            }
+            
+            document.querySelectorAll('.lyric-line').forEach((line, index) => {
+                line.classList.remove('active', 'previous');
+                if (index === currentIndex) {
+                    line.classList.add('active');
+                    line.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else if (index < currentIndex) {
+                    line.classList.add('previous');
+                }
+            });
+        });
+
+        function togglePlayPause() {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+                playPauseBtn.textContent = 'Pause';
+                if (audioContext && audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+            } else {
+                audioPlayer.pause();
+                playPauseBtn.textContent = 'Play';
+            }
+        }
+
+        function seekAudio(e) {
+            const rect = progressBar.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            audioPlayer.currentTime = pos * audioPlayer.duration;
+        }
+
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function resetApp() {
+            audioPlayer.pause();
+            audioPlayer.currentTime = 0;
+            lyricsContainer.classList.remove('active');
+            uploadContainer.classList.remove('hidden');
+            document.body.style.backgroundColor = '';
+            document.body.style.color = '';
+            lyrics = [];
+            fileInput.value = '';
+        }
+    </script>
+</body>
+</html>
