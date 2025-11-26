@@ -301,27 +301,46 @@
         async function fetchLyrics(title, artist) {
             lyricsDisplay.innerHTML = '<p class="loading">Fetching lyrics...</p>';
             
-            try {
-                // Use CORS proxy to bypass restrictions
-                const url = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`;
-                const response = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
-                
-                if (!response.ok) throw new Error('Lyrics not found');
-                
-                const data = await response.json();
-                
-                if (data.syncedLyrics) {
-                    parseLRC(data.syncedLyrics);
-                } else if (data.plainLyrics) {
-                    lyricsDisplay.innerHTML = `<p class="loading">Synced lyrics not available</p>
-                    <div style="margin-top: 20px; opacity: 0.7; font-size: 0.8em; white-space: pre-wrap;">${data.plainLyrics}</div>`;
-                } else {
-                    lyricsDisplay.innerHTML = '<p class="loading">No lyrics found for this song</p>';
+            const url = `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(title)}`;
+            
+            // Try multiple methods to fetch lyrics
+            const proxies = [
+                // Try direct connection first (some browsers/networks allow it)
+                url,
+                // Fallback CORS proxies
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+                `https://corsproxy.io/?${encodeURIComponent(url)}`,
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+            ];
+            
+            for (let proxyUrl of proxies) {
+                try {
+                    const response = await fetch(proxyUrl, {
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+                    
+                    if (!response.ok) continue;
+                    
+                    const data = await response.json();
+                    
+                    if (data.syncedLyrics) {
+                        parseLRC(data.syncedLyrics);
+                        return;
+                    } else if (data.plainLyrics) {
+                        lyricsDisplay.innerHTML = `<p class="loading">Synced lyrics not available</p>
+                        <div style="margin-top: 20px; opacity: 0.7; font-size: 0.8em; white-space: pre-wrap;">${data.plainLyrics}</div>`;
+                        return;
+                    }
+                } catch (error) {
+                    console.log(`Failed with ${proxyUrl}:`, error);
+                    continue;
                 }
-            } catch (error) {
-                console.error('Error fetching lyrics:', error);
-                lyricsDisplay.innerHTML = '<p class="loading">Lyrics not found. Try playing the song anyway!</p>';
             }
+            
+            // If all attempts failed
+            lyricsDisplay.innerHTML = '<p class="loading">Lyrics not found. Try playing the song anyway!</p>';
         }
 
         function parseLRC(lrcText) {
